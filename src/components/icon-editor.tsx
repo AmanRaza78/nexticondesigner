@@ -4,6 +4,7 @@ import { Slider } from "./ui/slider";
 import { useContext, useEffect, useState } from "react";
 import ColorPickerPanel from "./color-picker-panel";
 import { UpdateStorageContext } from "@/context/update-storage-context";
+import { IconDialog } from "./icon-dialog";
 
 export default function IconEditor() {
   const [storageValue, setStorageValue] = useState<any>(null);
@@ -22,6 +23,7 @@ export default function IconEditor() {
     storageValue ? storageValue?.iconColor : "#fff"
   );
   const { updateStorage, setUpdateStorage } = useContext(UpdateStorageContext);
+  const [icon, setIcon] = useState(storageValue ? storageValue?.icon : "Cat")
 
   useEffect(() => {
     if (storageValue) {
@@ -30,18 +32,15 @@ export default function IconEditor() {
         iconSize: size,
         iconRotate: rotate,
         iconColor: color,
-        icon: "Cat",
+        icon: icon,
       };
       setUpdateStorage(updatedValue);
       localStorage.setItem("value", JSON.stringify(updatedValue));
     }
-  }, [size, rotate, color]);
+  }, [size, rotate, color, icon]);
   return (
     <div>
-      <label>Icon</label>
-      <div className="bg-secondary cursor-pointer p-3 rounded-md w-[55px] h-[55px] my-2 flex items-center justify-center">
-        <Cat />
-      </div>
+      <IconDialog selectedIcon={(icon)=>setIcon(icon)}/>
       <div className="py-2">
         <label className="p-2 flex items-center justify-between">
           Size <span>{size} px</span>
