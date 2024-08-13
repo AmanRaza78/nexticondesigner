@@ -6,8 +6,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { iconList } from "@/constants/icon-list";
-import { Cat } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { icons, LucideIcon } from "lucide-react";
 
 interface IconDialogProps {
@@ -30,6 +29,17 @@ const CustomIcon: React.FC<CustomIconProps> = ({ name, color, size }) => {
 
 export function IconDialog({ selectedIcon }: IconDialogProps) {
   const [openDialog, setOpenDialog] = useState(false);
+  const [storageValue, setStorageValue] = useState<any>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedValue = localStorage.getItem("value");
+      setStorageValue(storedValue ? JSON.parse(storedValue) : {});
+    }
+  }, []);
+
+  const [icon, setIcon] = useState(storageValue ? storageValue?.icon : "Cat");
+
   return (
     <div>
       <div>
@@ -38,7 +48,11 @@ export function IconDialog({ selectedIcon }: IconDialogProps) {
           className="bg-secondary cursor-pointer p-3 rounded-md w-[55px] h-[55px] my-2 flex items-center justify-center"
           onClick={() => setOpenDialog(true)}
         >
-          <Cat />
+          <CustomIcon
+            name={icon as keyof typeof icons}
+            color="#000"
+            size={20}
+          />
         </div>
       </div>
       <Dialog open={openDialog}>
@@ -53,6 +67,7 @@ export function IconDialog({ selectedIcon }: IconDialogProps) {
                     onClick={() => {
                       selectedIcon(icon);
                       setOpenDialog(false);
+                      setIcon(icon);
                     }}
                     key={index}
                   >

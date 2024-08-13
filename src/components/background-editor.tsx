@@ -6,37 +6,32 @@ import ColorPickerPanel from "./color-picker-panel";
 import { UpdateStorageContext } from "@/context/update-storage-context";
 
 export default function BackgroundEditor() {
-  const [storageValue, setStorageValue] = useState<any>(null);
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedValue = localStorage.getItem("value");
-      setStorageValue(storedValue ? JSON.parse(storedValue) : {});
-    }
-  }, []);
-
-  const [rounded, setRounded] = useState(
-    storageValue ? storageValue?.bgRounded : 0
-  );
-  const [padding, setPadding] = useState(
-    storageValue ? storageValue?.bgPadding : 0
-  );
-  const [color, setColor] = useState(
-    storageValue ? storageValue?.bgColor : "#000"
-  );
-
   const { updateStorage, setUpdateStorage } = useContext(UpdateStorageContext);
+  const [storageValue, setStorageValue] = useState<any>(updateStorage || {});
+  const [rounded, setRounded] = useState(storageValue?.bgRounded || 0);
+  const [padding, setPadding] = useState(storageValue?.bgPadding || 0);
+  const [color, setColor] = useState(storageValue?.bgColor || "#000");
 
+  // Sync storageValue with the latest updateStorage whenever it changes
   useEffect(() => {
-    if (storageValue) {
-      const updatedValue = {
-        ...storageValue,
-        bgRounded: rounded,
-        bgPadding: padding,
-        bgColor: color,
-      };
-      setUpdateStorage(updatedValue);
-      localStorage.setItem("value", JSON.stringify(updatedValue));
+    if (updateStorage) {
+      setStorageValue(updateStorage);
+      setRounded(updateStorage.bgRounded || 0);
+      setPadding(updateStorage.bgPadding || 0);
+      setColor(updateStorage.bgColor || "#000");
     }
+  }, [updateStorage]);
+
+  // Update the context and localStorage whenever a state changes
+  useEffect(() => {
+    const updatedValue = {
+      ...storageValue,
+      bgRounded: rounded,
+      bgPadding: padding,
+      bgColor: color,
+    };
+    setUpdateStorage(updatedValue);
+    localStorage.setItem("value", JSON.stringify(updatedValue));
   }, [rounded, padding, color]);
 
   return (

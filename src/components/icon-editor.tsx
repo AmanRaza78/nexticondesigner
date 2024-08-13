@@ -1,46 +1,46 @@
 "use client";
-import { Cat } from "lucide-react";
-import { Slider } from "./ui/slider";
+
 import { useContext, useEffect, useState } from "react";
+import { Slider } from "./ui/slider";
 import ColorPickerPanel from "./color-picker-panel";
 import { UpdateStorageContext } from "@/context/update-storage-context";
 import { IconDialog } from "./icon-dialog";
 
 export default function IconEditor() {
-  const [storageValue, setStorageValue] = useState<any>(null);
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedValue = localStorage.getItem("value");
-      setStorageValue(storedValue ? JSON.parse(storedValue) : {});
-    }
-  }, []);
-  const [size, setSize] = useState(storageValue ? storageValue?.iconSize : 280);
-  const [rotate, setRotate] = useState(
-    storageValue ? storageValue?.iconRotate : 0
-  );
-  const [color, setColor] = useState(
-    storageValue ? storageValue?.iconColor : "#fff"
-  );
   const { updateStorage, setUpdateStorage } = useContext(UpdateStorageContext);
-  const [icon, setIcon] = useState(storageValue ? storageValue?.icon : "Cat")
+  const [storageValue, setStorageValue] = useState<any>(updateStorage || {});
+  const [size, setSize] = useState(storageValue?.iconSize || 280);
+  const [rotate, setRotate] = useState(storageValue?.iconRotate || 0);
+  const [color, setColor] = useState(storageValue?.iconColor || "#fff");
+  const [icon, setIcon] = useState(storageValue?.icon || "Cat");
 
+  // Sync storageValue with the latest updateStorage whenever it changes
   useEffect(() => {
-    if (storageValue) {
-      const updatedValue = {
-        ...storageValue,
-        iconSize: size,
-        iconRotate: rotate,
-        iconColor: color,
-        icon: icon,
-      };
-      setUpdateStorage(updatedValue);
-      localStorage.setItem("value", JSON.stringify(updatedValue));
+    if (updateStorage) {
+      setStorageValue(updateStorage);
+      setSize(updateStorage.iconSize || 280);
+      setRotate(updateStorage.iconRotate || 0);
+      setColor(updateStorage.iconColor || "#fff");
+      setIcon(updateStorage.icon || "Cat");
     }
+  }, [updateStorage]);
+
+  // Update the context and localStorage whenever a state changes
+  useEffect(() => {
+    const updatedValue = {
+      ...storageValue,
+      iconSize: size,
+      iconRotate: rotate,
+      iconColor: color,
+      icon: icon,
+    };
+    setUpdateStorage(updatedValue);
+    localStorage.setItem("value", JSON.stringify(updatedValue));
   }, [size, rotate, color, icon]);
+
   return (
     <div>
-      <IconDialog selectedIcon={(icon)=>setIcon(icon)}/>
+      <IconDialog selectedIcon={(icon) => setIcon(icon)} />
       <div className="py-2">
         <label className="p-2 flex items-center justify-between">
           Size <span>{size} px</span>
