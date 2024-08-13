@@ -11,27 +11,24 @@ import { useState } from "react";
 import { icons, LucideIcon } from "lucide-react";
 
 interface IconDialogProps {
-    selectedIcon: (value: string) => void;
-  }
-
-
-interface CustomIconProps {
-    name: keyof typeof icons; // Ensure name corresponds to a valid icon key
-    color?: string;
-    size?: string | number;
+  selectedIcon: (value: string) => void;
 }
 
+interface CustomIconProps {
+  name: keyof typeof icons; // Ensure name corresponds to a valid icon key
+  color?: string;
+  size?: string | number;
+}
 
 const CustomIcon: React.FC<CustomIconProps> = ({ name, color, size }) => {
-    const LucidIcon: LucideIcon | undefined = icons[name];
-    if (!LucidIcon) {
-        return null;
-    }
-    return <LucidIcon color={color} size={size}/>;
+  const LucidIcon: LucideIcon | undefined = icons[name];
+  if (!LucidIcon) {
+    return null;
+  }
+  return <LucidIcon color={color} size={size} />;
 };
 
-
-export function IconDialog({selectedIcon}: IconDialogProps) {
+export function IconDialog({ selectedIcon }: IconDialogProps) {
   const [openDialog, setOpenDialog] = useState(false);
   return (
     <div>
@@ -49,13 +46,24 @@ export function IconDialog({selectedIcon}: IconDialogProps) {
           <DialogHeader>
             <DialogTitle>Pic Your Favorite Icon</DialogTitle>
             <DialogDescription>
-                <div className="grid gird-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 overflow-auto h-[400px] p-6">
-                    {iconList.map((icon, index)=>(
-                        <div className="border p-4 flex rounded-sm items-center justify-center cursor-pointer" onClick={()=>{selectedIcon(icon); setOpenDialog(false)}}>
-                            <CustomIcon name={icon as keyof typeof icons} color="#000" size={20} />
-                        </div>
-                    ))}
-                </div>
+              <div className="grid gird-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 overflow-auto h-[400px] p-6">
+                {iconList.map((icon, index) => (
+                  <div
+                    className="border p-4 flex rounded-sm items-center justify-center cursor-pointer"
+                    onClick={() => {
+                      selectedIcon(icon);
+                      setOpenDialog(false);
+                    }}
+                    key={index}
+                  >
+                    <CustomIcon
+                      name={icon as keyof typeof icons}
+                      color="#000"
+                      size={20}
+                    />
+                  </div>
+                ))}
+              </div>
             </DialogDescription>
           </DialogHeader>
         </DialogContent>
